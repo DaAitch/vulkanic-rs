@@ -30,7 +30,3 @@ to understand the API reading the official specs.
 - no builder patterns ❌
 - no Vulkan abstraction ❌
 - no shader compilation ❌
-
-## Production readiness
-
-Use 

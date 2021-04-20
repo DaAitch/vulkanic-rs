@@ -35,12 +35,6 @@
 //!
 //! ```
 //!
-//! ## Production readiness
-//!
-//!
-//!
-//!
-//!
 //! ## Crate conventions
 //!
 //! - same partitioning like `vk-sys` with `EntryPoints`, `InstancePointers` and `DevicePointers`
