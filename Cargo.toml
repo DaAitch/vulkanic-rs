@@ -1,0 +1,16 @@
+[package]
+name = "vulkanic"
+version = "0.1.0"
+authors = ["Philipp Renoth <renoth@aitch.de>"]
+edition = "2018"
+repository = "https://github.com/DaAitch/vulkanic-rs"
+description = "Ultra-thin Vulkan API wrapper sitting on top of vk-sys"
+license = "MIT"
+documentation = "https://docs.rs/vulkanic"
+homepage = "https://github.com/DaAitch/vulkanic-rs"
+keywords = ["vulkan", "graphics", "gpu", "rendering"]
+categories = ["rendering::graphics-api"]
+readme = "README.md"
+
+[dependencies]
+vk-sys = "0.5.3"
