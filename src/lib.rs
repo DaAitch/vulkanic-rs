@@ -241,7 +241,17 @@ impl InstancePointers {
         })
     }
 
-    // get_physical_device_memory_properties
+    /// <https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkGetPhysicalDeviceMemoryProperties.html>
+    #[inline]
+    pub fn get_physical_device_memory_properties(
+        &self,
+        physical_device: vk::PhysicalDevice,
+    ) -> vk::PhysicalDeviceMemoryProperties {
+        vk_get(|data| unsafe {
+            self.ptr
+                .GetPhysicalDeviceMemoryProperties(physical_device, data);
+        })
+    }
 
     // get_physical_device_sparse_image_format_properties
 
@@ -488,13 +498,54 @@ impl DevicePointers {
         vk_call(|| unsafe { self.ptr.DeviceWaitIdle(device) })
     }
 
-    // allocate_memory
+    /// <https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkAllocateMemory.html>
+    ///
+    /// # Safety
+    /// `allocate_info` should be valid regarding its containing pointers.
+    ///
+    #[inline]
+    pub unsafe fn allocate_memory(
+        &self,
+        device: vk::Device,
+        allocate_info: &vk::MemoryAllocateInfo,
+    ) -> Result<vk::DeviceMemory> {
+        vk_query(|data| {
+            self.ptr
+                .AllocateMemory(device, allocate_info, ptr::null(), data)
+        })
+    }
 
-    // free_memory
+    /// <https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkFreeMemory.html>
+    #[inline]
+    pub fn free_memory(&self, device: vk::Device, memory: vk::DeviceMemory) {
+        vk_run(|| unsafe {
+            self.ptr.FreeMemory(device, memory, ptr::null());
+        });
+    }
 
-    // map_memory
+    /// <https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkMapMemory.html>
+    #[inline]
+    pub fn map_memory(
+        &self,
+        device: vk::Device,
+        memory: vk::DeviceMemory,
+        offset: vk::DeviceSize,
+        size: vk::DeviceSize,
+        flags: vk::MemoryMapFlags,
+    ) -> Result<*mut std::ffi::c_void> {
+        vk_query(|data| unsafe {
+            self.ptr
+                .MapMemory(device, memory, offset, size, flags, data)
+        })
+    }
 
-    // unmap_memory
+    /// <https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkUnmapMemory.html>
+    #[inline]
+    pub fn unmap_memory(&self, device: vk::Device, memory: vk::DeviceMemory) {
+        vk_run(|| unsafe {
+            self.ptr.UnmapMemory(device, memory);
+        });
+    }
 
     // flush_mapped_memory_ranges
 
@@ -502,11 +553,31 @@ impl DevicePointers {
 
     // get_device_memory_commitment
 
-    // bind_buffer_memory
+    /// <https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkDeviceWaitIdle.html>
+    #[inline]
+    pub fn bind_buffer_memory(
+        &self,
+        device: vk::Device,
+        buffer: vk::Buffer,
+        memory: vk::DeviceMemory,
+        memory_offset: vk::DeviceSize,
+    ) -> Result<()> {
+        vk_call(|| unsafe {
+            self.ptr
+                .BindBufferMemory(device, buffer, memory, memory_offset)
+        })
+    }
 
     // bind_image_memory
 
-    // get_buffer_memory_requirements
+    #[inline]
+    pub fn get_buffer_memory_requirements(
+        &self,
+        device: vk::Device,
+        buffer: vk::Buffer,
+    ) -> vk::MemoryRequirements {
+        vk_get(|data| unsafe { self.ptr.GetBufferMemoryRequirements(device, buffer, data) })
+    }
 
     // get_image_memory_requirements
 
@@ -608,9 +679,30 @@ impl DevicePointers {
 
     // get_query_pool_results
 
-    // create_buffer
+    /// <https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCreateBuffer.html>
+    ///
+    /// # Safety
+    /// `create_info` should be valid regarding its containing pointers.
+    ///
+    #[inline]
+    pub unsafe fn create_buffer(
+        &self,
+        device: vk::Device,
+        create_info: &vk::BufferCreateInfo,
+    ) -> Result<vk::Buffer> {
+        vk_query(|data| {
+            self.ptr
+                .CreateBuffer(device, create_info, ptr::null(), data)
+        })
+    }
 
-    // destroy_buffer
+    /// <https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkDestroyBuffer.html>
+    #[inline]
+    pub fn destroy_buffer(&self, device: vk::Device, buffer: vk::Buffer) {
+        vk_run(|| unsafe {
+            self.ptr.DestroyBuffer(device, buffer, ptr::null());
+        });
+    }
 
     // create_buffer_view
 
@@ -941,7 +1033,28 @@ impl DevicePointers {
 
     // cmd_bind_index_buffer
 
-    // cmd_bind_vertex_buffers
+    /// <https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdBindVertexBuffers.html>
+    #[inline]
+    pub fn cmd_bind_vertex_buffers(
+        &self,
+        command_buffer: vk::CommandBuffer,
+        first_binding: u32,
+        buffers: &[vk::Buffer],
+        offsets: &[vk::DeviceSize],
+    ) {
+        let count = buffers.len();
+        assert_eq!(count, offsets.len());
+
+        vk_run(|| unsafe {
+            self.ptr.CmdBindVertexBuffers(
+                command_buffer,
+                first_binding,
+                count as u32,
+                buffers.as_ptr(),
+                offsets.as_ptr(),
+            );
+        });
+    }
 
     /// <https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdDraw.html>
     #[inline]
