@@ -2,6 +2,8 @@
 
 Ultra-thin Vulkan API wrapper sitting on top of [vk-sys](https://docs.rs/vk-sys).
 
+Checkout [Examples](https://docs.rs/vulkanic).
+
 ## Why another Vulkan wrapper?
 
 Vulkan API is a very performant, low-level graphics and computation API.
