@@ -995,7 +995,15 @@ impl DevicePointers {
         vk_call(|| unsafe { self.ptr.EndCommandBuffer(command_buffer) })
     }
 
-    // reset_command_buffer
+    /// <https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkResetCommandBuffer.html>
+    #[inline]
+    pub fn reset_command_buffer(
+        &self,
+        command_buffer: vk::CommandBuffer,
+        flags: vk::CommandBufferResetFlags,
+    ) -> Result<()> {
+        vk_call(|| unsafe { self.ptr.ResetCommandBuffer(command_buffer, flags) })
+    }
 
     /// <https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdBindPipeline.html>
     #[inline]
